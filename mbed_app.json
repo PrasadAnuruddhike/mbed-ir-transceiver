@@ -1,0 +1,47 @@
+{
+  "macros": [
+    "MBED_HEAP_STATS_ENABLED=1"
+  ],
+  "target_overrides": {
+    "*": {
+      "target.components_add": ["SPIF","I2CEE"],
+      "platform.stdio-buffered-serial": true,
+      "platform.stdio-baud-rate": 230400,
+      "platform.stdio-convert-newlines": true,
+      "platform.fatal-error-auto-reboot-enabled": true,
+      "target.features_add": [
+        "BOOTLOADER",
+        "STORAGE"
+      ],
+      "mbed-trace.enable": 1,
+      "target.OUTPUT_EXT": "hex"
+    },
+    "LPC1768": {
+      "rtos.present": "1",
+      "events.present": "1",
+      "filesystem.present": "1",
+      "rtos.main-thread-stack-size": "1536",
+      "target.macros_add": [
+        "DISABLE_ERROR_DESCRIPTION"
+      ],
+      "target.components_add": [
+        "SPIF"
+      ],
+      "storage.storage_type": "FILESYSTEM",
+      "storage_filesystem.filesystem": "LITTLE",
+      "storage_filesystem.blockdevice": "SPIF",
+      "spif-driver.SPI_MOSI": "p5",
+      "spif-driver.SPI_MISO": "p6",
+      "spif-driver.SPI_CLK": "p7",
+      "spif-driver.SPI_CS": "p8",
+      "spif-driver.SPI_FREQ": "1000000"
+    }
+  },
+  "config": {
+    "mbed-trace-max-level": {
+      "help": "Max trace level. Must be one of the following: [TRACE_LEVEL_DEBUG, TRACE_LEVEL_INFO, TRACE_LEVEL_WARN, TRACE_LEVEL_ERROR, TRACE_LEVEL_CMD]",
+      "macro_name": "MBED_TRACE_MAX_LEVEL",
+      "value": "TRACE_LEVEL_DEBUG"
+    }
+  }
+}
