@@ -1,6 +1,15 @@
 #include <mbed.h>
+#include "IRremote.h"
 
 #define IR_REC_PIN  P0_23
+#define IR_REGION1 P2_5
+#define IR_REGION2 P2_4
+#define IR_REGION3 P2_3
+#define IR_REGION4 P2_2
+#define IR_REGION5 P2_0
+#define IR_REGION6 P2_1
+#define IR_FREQ 38
+
 // #define IR_RECEIVING_TIMEOUT 3s  // 3 second
 
 typedef struct HDR_DATA {
@@ -39,6 +48,13 @@ DigitalIn button_learn_start    (P0_9);
 
 Timer time_track;
 InterruptIn ir_rec(IR_REC_PIN, PullUp);
+
+IRsend ir_send_R1 (IR_REGION1);
+IRsend ir_send_R2 (IR_REGION2);
+IRsend ir_send_R3 (IR_REGION3);
+IRsend ir_send_R4 (IR_REGION4);
+IRsend ir_send_R5 (IR_REGION5);
+IRsend ir_send_R6 (IR_REGION6);
 
 uint32_t remote_id = 0x01;
 uint8_t command_id = 0x02;
