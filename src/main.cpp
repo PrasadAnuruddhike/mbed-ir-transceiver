@@ -100,13 +100,13 @@ void ir_receiving(uint32_t remote_id, uint8_t cmd, uint8_t communication_id)
     indicator_ir_success  = 0;
 
     indicator_ir_ready  = 1;
+    printf("\nReady to Receive \n");
     // _eeprom_controller->read_ir_receive_color(temp_color_data);
 
     // leds((temp_color_data[0] * temp_color_data[3]) / 25500.0, (temp_color_data[1] * temp_color_data[3]) / 25500.0,
     //      (temp_color_data[2] * temp_color_data[3]) / 25500.0);
     // INFO("REceiving mode color %d %d %d
     // %d",temp_color_data[0],temp_color_data[1],temp_color_data[2],temp_color_data[3]);
-    indicator_ir_ready = 1;
 
     _ir_hdr_data_value.HDR_MARK = 0;
     _ir_hdr_data_value.HDR_SPACE = 0;
@@ -146,6 +146,8 @@ void ir_receiving(uint32_t remote_id, uint8_t cmd, uint8_t communication_id)
       indicator_ir_success  = 0;
 
       indicator_ir_receive  = 1;
+
+      printf("IR Received\n");
       // leds(0, 0, 0);
       // _eeprom_controller->read_ir_receive_indication_color(temp_color_data);
       // leds((temp_color_data[0] * temp_color_data[3]) / 25500.0, (temp_color_data[1] * temp_color_data[3]) / 25500.0,
@@ -207,6 +209,7 @@ void ir_receiving(uint32_t remote_id, uint8_t cmd, uint8_t communication_id)
         indicator_ir_success  = 0;
 
         indicator_ir_fail     = 1;
+        printf("IR Receive Fail\n");
         // _eeprom_controller->read_ir_receive_failure_color(temp_color_data);
         // leds((temp_color_data[0] * temp_color_data[3]) / 25500.0, (temp_color_data[1] * temp_color_data[3]) / 25500.0,
         //      (temp_color_data[2] * temp_color_data[3]) / 25500.0);
@@ -225,6 +228,8 @@ void ir_receiving(uint32_t remote_id, uint8_t cmd, uint8_t communication_id)
         indicator_ir_success  = 0;
 
         indicator_ir_success = 1;
+
+        printf("IR Receive Success\n");
         // _eeprom_controller->read_ir_receive_success_color(temp_color_data);
         // INFO("REceive suucees color %d %d %d
         // %d",temp_color_data[0],temp_color_data[1],temp_color_data[2],temp_color_data[3]);
@@ -295,6 +300,8 @@ void ir_receiving(uint32_t remote_id, uint8_t cmd, uint8_t communication_id)
       indicator_ir_success  = 0;
 
       indicator_ir_fail = 1;
+
+      printf("IR Receive Fail\n");
       // leds(0, 0, 0);
       // _eeprom_controller->read_ir_receive_failure_color(temp_color_data);
       // leds((temp_color_data[0] * temp_color_data[3]) / 25500.0, (temp_color_data[1] * temp_color_data[3]) / 25500.0,
