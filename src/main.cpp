@@ -37,7 +37,9 @@ volatile int currTime, trigTime, gap, endTime, refTime;
 
 void ir_receiving(uint32_t remote_id, uint8_t cmd, uint8_t communication_id);
 void interrupt();
-
+void hex_cmd(char region, uint8_t _ir_bit_count, int HDR_MARK, int HDR_SPACE, int BIT_MARK, int ZERO_SPACE,
+                         int ONE_SPACE, unsigned long long int first, unsigned long long int second,
+                         unsigned long long int third);
 
 DigitalOut indicator_ir_ready   (LED1);
 DigitalOut indicator_ir_receive (LED2);
@@ -281,8 +283,15 @@ void ir_receiving(uint32_t remote_id, uint8_t cmd, uint8_t communication_id)
         counter = 0;
         temp_count = 0;
 
-        ThisThread::sleep_for(500ms);
+        printf("----------------IR TRIGGER in 5 seconds-------------\n");
+        ThisThread::sleep_for(5s);
 
+        
+        char region = 1;
+
+        hex_cmd(region, _ir_hdr_data_value.ir_bit_count, _ir_hdr_data_value.HDR_MARK, _ir_hdr_data_value.HDR_SPACE,
+                  _ir_hdr_data_value.BIT_MARK, _ir_hdr_data_value.ZERO_SPACE, _ir_hdr_data_value.ONE_SPACE,
+                  hex_val.first, hex_val.second, hex_val.third);
         // for (int i = 0; i < counter; i++) {
         //   // INFO("%d", buf[i]);
         //   buf[i] = 0;
@@ -348,4 +357,124 @@ void interrupt()
     }
   }
   trigTime = currTime;
+}
+
+
+void hex_cmd(char region, uint8_t _ir_bit_count, int HDR_MARK, int HDR_SPACE, int BIT_MARK, int ZERO_SPACE,
+                         int ONE_SPACE, unsigned long long int first, unsigned long long int second,
+                         unsigned long long int third) 
+{
+  // ir_blaster_status = STATUS::ir_transmitting_mode;
+  // INFO("==============IR blaster status %i",ir_blaster_status);
+  
+  ir_hex_val_t _ir_data;
+  _ir_data.first = first;
+  _ir_data.second = second;
+  _ir_data.third = third;
+
+  printf("Ir bit count %d\n", _ir_bit_count);
+  printf("hex cmd First %llx\n", _ir_data.first);
+  printf("hex cmd Second %ll\nx", _ir_data.second);
+  printf("hex cmd Third %llx\n", _ir_data.third);
+  // _ir_data.first = 0x8032090004e02002;
+  // _ir_data.second = 0x890000e00e000035;
+  // _ir_data.third = 0x6d0000;
+
+  int16_t *buf = new int16_t[_ir_bit_count * 2];
+  int data_buf_counter = 0;
+
+  int temp_count = 0;
+  buf[data_buf_counter++] = HDR_MARK;
+  buf[data_buf_counter++] = HDR_SPACE;
+
+  temp_count = 0;
+
+  for (int i = 0; i < _ir_bit_count - 2; i++)  // 29
+  { 
+    if (i < 64) 
+    {
+      if ((_ir_data.first & (1ull << temp_count)) >> temp_count) 
+      {
+        buf[data_buf_counter++] = BIT_MARK;
+        buf[data_buf_counter++] = ONE_SPACE;
+        // serial.printf("1");
+
+      } 
+      else
+      {
+        buf[data_buf_counter++] = BIT_MARK;
+        buf[data_buf_counter++] = ZERO_SPACE;
+        // serial.printf("0");
+      }
+
+    } 
+    else if (i < 128) 
+    {
+      if ((_ir_data.second & (1ull << (temp_count - 64))) >> (temp_count - 64)) 
+      {
+        buf[data_buf_counter++] = BIT_MARK;
+        buf[data_buf_counter++] = ONE_SPACE;
+        // serial.printf("1");
+      } 
+      else 
+      {
+        buf[data_buf_counter++] = BIT_MARK;
+        buf[data_buf_counter++] = ZERO_SPACE;
+        // serial.printf("0");
+      }
+
+    } 
+    else 
+    {
+      if ((_ir_data.third & (1ull << (temp_count - 128))) >> (temp_count - 128)) 
+      {
+        buf[data_buf_counter++] = BIT_MARK;
+        buf[data_buf_counter++] = ONE_SPACE;
+        // serial.printf("1");
+      } 
+      else 
+      {
+        buf[data_buf_counter++] = BIT_MARK;
+        buf[data_buf_counter++] = ZERO_SPACE;
+        // serial.printf("0");
+      }
+    }
+
+    temp_count++;
+  }
+  buf[data_buf_counter++] = BIT_MARK;
+  buf[data_buf_counter++] = 5000;
+  printf("FIrst %d, Second %d, last %d and last %d data_but-count %d\n", buf[0], buf[1], buf[data_buf_counter - 2],
+       buf[data_buf_counter - 1], data_buf_counter);
+  printf("FIrst %d, Second %d, last %d and last %d data_but-count %d\n", buf[2], buf[3], buf[4], buf[5], buf[6]);
+
+  if ((region & 0x01) == 1) {
+    // contorl_leds(1, 0, 1, 0);
+    ir_send_R1.sendRaw(buf, data_buf_counter, IR_FREQ);
+    printf("Fire Zone 1 \n");
+    ThisThread::sleep_for(500ms);
+  }
+  if ((region & 0x02) == 2) {
+    // contorl_leds(2, 0, 1, 0);
+    ir_send_R2.sendRaw(buf, data_buf_counter, IR_FREQ);
+    printf("Fire Zone 2 \n");
+    ThisThread::sleep_for(500ms);
+  }
+  if ((region & 0x04) == 4) {
+    // contorl_leds(3, 0, 1, 0);
+    ir_send_R3.sendRaw(buf, data_buf_counter, IR_FREQ);
+    printf("Fire Zone 3 \n");
+    ThisThread::sleep_for(500ms);
+  }
+  if ((region & 0x08) == 8) {
+    // contorl_leds(4, 0, 1, 0);
+    ir_send_R4.sendRaw(buf, data_buf_counter, IR_FREQ);
+    printf("Fire Zone 4 \n");
+    ThisThread::sleep_for(500ms);
+  }
+
+  delete[] buf;
+  temp_count = 0;
+  data_buf_counter = 0;
+  
 }
