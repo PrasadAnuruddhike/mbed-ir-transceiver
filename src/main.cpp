@@ -68,14 +68,15 @@ int main() {
   printf("IR Sample Test\n");
 
   while(1) {
+    ir_receiving(remote_id, command_id, comm_id);
+    wait_us(5000000);
+    // if(button_learn_start.read() == 1)
+    // {
 
-    if(button_learn_start.read() == 1)
-    {
-
-      ir_receiving(remote_id, command_id, comm_id);
-      // indicator_ir_success = 1;
-      wait_us(5000000);
-    }
+    //   ir_receiving(remote_id, command_id, comm_id);
+    //   // indicator_ir_success = 1;
+    //   wait_us(5000000);
+    // }
     // else
     // {
     //   // indicator_ir_success = 0;
