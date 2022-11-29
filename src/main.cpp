@@ -28,7 +28,10 @@ typedef struct IR_HEX {
   /* data */
 } ir_hex_val_t;
 
-int16_t *buf;
+// int16_t *buf;
+
+uint16_t *buf;
+
 volatile int counter = 0;
 int8_t temp_inc = 0;
 
@@ -40,6 +43,7 @@ void interrupt();
 void hex_cmd(char region, uint8_t _ir_bit_count, int HDR_MARK, int HDR_SPACE, int BIT_MARK, int ZERO_SPACE,
                          int ONE_SPACE, unsigned long long int first, unsigned long long int second,
                          unsigned long long int third);
+void invert_value(unsigned long long *value);
 
 DigitalOut indicator_ir_ready   (LED1);
 DigitalOut indicator_ir_receive (LED2);
@@ -58,6 +62,8 @@ IRsend ir_send_R4 (IR_REGION4);
 IRsend ir_send_R5 (IR_REGION5);
 IRsend ir_send_R6 (IR_REGION6);
 
+// DigitalOut IR_LED_1(IR_REGION1);
+
 uint32_t remote_id = 0x01;
 uint8_t command_id = 0x02;
 uint8_t comm_id    = 0xd4;
@@ -67,9 +73,113 @@ int main() {
   // put your setup code here, to run once:
   printf("IR Sample Test\n");
 
+  // printf("----------------IR TRIGGER in 5 seconds-------------\n");
+  // wait_us(5000000);
+  hdr_data_t _ir_hdr_data_value;
+  ir_hex_val_t hex_val;
+  char region;
+
+  // LG Remote 24 C
+  // _ir_hdr_data_value.HDR_MARK     = 3154;
+  // _ir_hdr_data_value.HDR_SPACE    = 9848;
+  // _ir_hdr_data_value.BIT_MARK     = 522;
+  // _ir_hdr_data_value.ZERO_SPACE   = 1559;
+  // _ir_hdr_data_value.ONE_SPACE    = 602;
+  // _ir_hdr_data_value.ir_bit_count = 30;
+
+  // hex_val.first   = 0x7f6efee;
+  // hex_val.second  = 0x00;
+  // hex_val.third   = 0x00;
+
+
+  // LG Remote 24 C --> Original Codes
+  // _ir_hdr_data_value.HDR_MARK     = 8000;
+  // _ir_hdr_data_value.HDR_SPACE    = 4000;
+  // _ir_hdr_data_value.BIT_MARK     = 600;
+  // _ir_hdr_data_value.ZERO_SPACE   = 550;
+  // _ir_hdr_data_value.ONE_SPACE    = 1600;
+  // _ir_hdr_data_value.ir_bit_count = 28;
+
+  // hex_val.first   = 0x8091011;
+  // hex_val.second  = 0x00;
+  // hex_val.third   = 0x00;  
+
+  // TV Box Volume Down
+  // Working
+  // _ir_hdr_data_value.HDR_MARK     = 9031;
+  // _ir_hdr_data_value.HDR_SPACE    = 4536;
+  // _ir_hdr_data_value.BIT_MARK     = 555;
+  // _ir_hdr_data_value.ZERO_SPACE   = 1712;
+  // _ir_hdr_data_value.ONE_SPACE    = 580;
+  // _ir_hdr_data_value.ir_bit_count = 34;
+
+  // hex_val.first   = 0x17e8bfbf;
+
+  // // 0xb24d4040 --> Capture for Power On/Off
+  // hex_val.first   = 0xb24d4040;
+
+  // // // 0xbc434040 --> Capture for Mute
+  // hex_val.first   = 0xbc434040;
+
+  // // 0xe8174040 --> Capture for volume down
+  // hex_val.first   = 0xe8174040;
+
+  // // // 0xf40b4040 --> Capture for key up
+  // hex_val.first   = 0xf40b4040;
+
+  // // 0xef104040 --> Capture for key left
+  // hex_val.first   = 0xef104040;
+
+  // invert_value(&hex_val.first);
+  // hex_val.second  = 0x00;
+  // hex_val.third   = 0x00;
+
+  
+  
+  // // Working
+  // _ir_hdr_data_value.HDR_MARK     = 9031;
+  // _ir_hdr_data_value.HDR_SPACE    = 4536;
+  // _ir_hdr_data_value.BIT_MARK     = 555;
+  // _ir_hdr_data_value.ZERO_SPACE   = 580;
+  // _ir_hdr_data_value.ONE_SPACE    = 1712;
+  // _ir_hdr_data_value.ir_bit_count = 34;
+  // hex_val.first   = 0xe8174040;
+
+  // invert_value(&hex_val.first);
+  // printf("invert 0x%llX\n", hex_val.first);
+
+
+  // // TV BOX with final bits
+  // _ir_hdr_data_value.HDR_MARK     = 9037;
+  // _ir_hdr_data_value.HDR_SPACE    = 4536;
+  // _ir_hdr_data_value.BIT_MARK     = 555;
+  // _ir_hdr_data_value.ZERO_SPACE   = 580;
+  // _ir_hdr_data_value.ONE_SPACE    = 1712;
+  // _ir_hdr_data_value.ir_bit_count = 34;
+
+  // hex_val.first   = 0xe8174040;
+  // hex_val.second  = 0x00;
+  // hex_val.third   = 0x00;
+
+  // region = 1;
+
+
+  // for(int i = 0; i < 3; i++)
+  // {
+  //   hex_cmd(region, _ir_hdr_data_value.ir_bit_count, _ir_hdr_data_value.HDR_MARK, _ir_hdr_data_value.HDR_SPACE,
+  //                   _ir_hdr_data_value.BIT_MARK, _ir_hdr_data_value.ZERO_SPACE, _ir_hdr_data_value.ONE_SPACE,
+  //                   hex_val.first, hex_val.second, hex_val.third);
+  //   wait_us(2000000);  
+  // }
   while(1) {
+    // IR_LED_1 = 1;
+    // wait_us(100000);
+    // IR_LED_1 = 0;
+    // wait_us(1500000);
+    
     ir_receiving(remote_id, command_id, comm_id);
-    wait_us(5000000);
+    // wait_us(50000000);
+  
     // if(button_learn_start.read() == 1)
     // {
 
@@ -93,7 +203,7 @@ void ir_receiving(uint32_t remote_id, uint8_t cmd, uint8_t communication_id)
 {
   for (int8_t i = 0; i < 3; i++) 
   {
-    buf = new int16_t[500];
+    buf = new uint16_t[500];
     hdr_data_t _ir_hdr_data_value;
     uint8_t temp_color_data[4] = {0};
   
@@ -170,10 +280,19 @@ void ir_receiving(uint32_t remote_id, uint8_t cmd, uint8_t communication_id)
       len_raw_buf = counter;  // sizeof(buf) / sizeof(buf[0]);
       int temp_count = 0;
 
+      printf("--------------------------------------\n");
+      for(int i = 0; i < counter; i++)
+      {
+        printf("%d, ",buf[i]);
+      }
+      printf("\n--------------------------------------\n");
+
       for (int i = (temp_inc + 4); i < (counter - 1); i = i + 2) 
       {
         if (buf[i] > _ir_hdr_data_value.HDR_MARK) 
         {
+          printf("\ncounter: %d,  i: %d", counter, i);
+          counter = i;
           break;
         }
         if (!(buf[i] < _ir_hdr_data_value.ZERO_SPACE + ERROR && buf[i] > _ir_hdr_data_value.ZERO_SPACE - ERROR)) 
@@ -181,14 +300,15 @@ void ir_receiving(uint32_t remote_id, uint8_t cmd, uint8_t communication_id)
           if (buf[i] > 0) 
           {
             temp_ONE_SPACE += buf[i];
-            // INFO("%d", buf[i]);
+            printf("%d ,", buf[i]);
             temp_count++;
           }
         }
       }
+      printf("\n");
 
       _ir_hdr_data_value.ONE_SPACE = temp_ONE_SPACE / temp_count;
-      printf("%d \t: \n", buf[0]);
+      printf("start: %d end: %d \t: \n", buf[0], buf[counter - 1]);
       printf("HDR_MARK \t: %d\n", _ir_hdr_data_value.HDR_MARK);
       printf("HDR_SPACE \t: %d\n", _ir_hdr_data_value.HDR_SPACE);
       printf("BIT_MARK \t: %d\n", _ir_hdr_data_value.BIT_MARK);
@@ -242,6 +362,7 @@ void ir_receiving(uint32_t remote_id, uint8_t cmd, uint8_t communication_id)
         {
           if ((buf[i] > (_ir_hdr_data_value.HDR_MARK - ERROR)) | (buf[i] > (_ir_hdr_data_value.HDR_SPACE - ERROR))) 
           {
+            printf("hdr\n");
             hex_val.first = 0;
             hex_val.second = 0;
             hex_val.third = 0;
@@ -253,8 +374,9 @@ void ir_receiving(uint32_t remote_id, uint8_t cmd, uint8_t communication_id)
           {
             // bit value ZERO
           } 
-          else if (buf[i] > _ir_hdr_data_value.ONE_SPACE - ERROR && buf[i] < _ir_hdr_data_value.ONE_SPACE + ERROR) 
+          else if ((buf[i] > (_ir_hdr_data_value.ONE_SPACE - ERROR)) && (buf[i] < (_ir_hdr_data_value.ONE_SPACE + ERROR)))
           {
+            printf("1 - %d\n", temp_count);
             // bit value ONE
             if (temp_count < 64) 
             {
@@ -274,7 +396,7 @@ void ir_receiving(uint32_t remote_id, uint8_t cmd, uint8_t communication_id)
 
         int8_t ir_bit_count = temp_count + 2;
         _ir_hdr_data_value.ir_bit_count = ir_bit_count;
-        printf("Number of Bits %d \n", temp_count);
+        printf("Number of Bits %d \n", _ir_hdr_data_value.ir_bit_count);
         printf("First Hex Value \t: %llx \n", hex_val.first);
         printf("Second Hex Value \t: %llx\n", hex_val.second);
         printf("Third Hex Value \t: %llx\n", hex_val.third);
@@ -284,15 +406,38 @@ void ir_receiving(uint32_t remote_id, uint8_t cmd, uint8_t communication_id)
         counter = 0;
         temp_count = 0;
 
-        printf("----------------IR TRIGGER in 5 seconds-------------\n");
-        ThisThread::sleep_for(5s);
+        // invert_value(&hex_val.first);
+        // printf("invert hex 0x%llX\n", hex_val.first);
 
-        
-        char region = 1;
+        // char region_address[4] = {1, 2, 4, 8};
 
-        hex_cmd(region, _ir_hdr_data_value.ir_bit_count, _ir_hdr_data_value.HDR_MARK, _ir_hdr_data_value.HDR_SPACE,
-                  _ir_hdr_data_value.BIT_MARK, _ir_hdr_data_value.ZERO_SPACE, _ir_hdr_data_value.ONE_SPACE,
-                  hex_val.first, hex_val.second, hex_val.third);
+        for(uint8_t i = 1; i < 3; i ++)
+        {
+          char region = i;
+          printf("----------------IR %d TRIGGER in 2 seconds-------------\n", i);
+          wait_us(2000000);
+
+          hex_cmd(region, _ir_hdr_data_value.ir_bit_count, _ir_hdr_data_value.HDR_MARK, _ir_hdr_data_value.HDR_SPACE,
+                    _ir_hdr_data_value.BIT_MARK, _ir_hdr_data_value.ZERO_SPACE, _ir_hdr_data_value.ONE_SPACE,
+                    hex_val.first, hex_val.second, hex_val.third);
+          
+        }
+
+        /*
+
+        _ir_hdr_data_value.ir_bit_count = _ir_hdr_data_value.ir_bit_count - 2;
+
+        for(uint8_t i = 1; i < 3; i ++){
+          char region = i;
+          printf("----------------IR %d TRIGGER Reduced bit in 2 seconds-------------\n", i);
+          wait_us(2000000);
+
+          hex_cmd(region, _ir_hdr_data_value.ir_bit_count, _ir_hdr_data_value.HDR_MARK, _ir_hdr_data_value.HDR_SPACE,
+                    _ir_hdr_data_value.BIT_MARK, _ir_hdr_data_value.ZERO_SPACE, _ir_hdr_data_value.ONE_SPACE,
+                    hex_val.first, hex_val.second, hex_val.third);
+        }
+        */
+
         // for (int i = 0; i < counter; i++) {
         //   // INFO("%d", buf[i]);
         //   buf[i] = 0;
@@ -360,6 +505,26 @@ void interrupt()
   trigTime = currTime;
 }
 
+void invert_value(unsigned long long *value)
+{
+  printf("input 0x%llX\n", *value);
+  unsigned long long temp = 0;
+  for (int i = 0; i < 32; i++)
+  {
+    if((*value >> i) & 0x01 == 0x01)
+    {
+      temp = temp | (0x00 << i);
+    }
+    else
+    {
+      temp = temp | (0x01 << i);
+    }
+  }
+
+  temp = temp & 0xFFFFFFFF;
+  // printf("invert 0x%llX\n", temp);
+  *value = temp;
+}
 
 void hex_cmd(char region, uint8_t _ir_bit_count, int HDR_MARK, int HDR_SPACE, int BIT_MARK, int ZERO_SPACE,
                          int ONE_SPACE, unsigned long long int first, unsigned long long int second,
@@ -444,10 +609,19 @@ void hex_cmd(char region, uint8_t _ir_bit_count, int HDR_MARK, int HDR_SPACE, in
     temp_count++;
   }
   buf[data_buf_counter++] = BIT_MARK;
+  // buf[data_buf_counter++] = 5000;
+  buf[data_buf_counter++] = 32766;      // overflow
+  
+  // buf[data_buf_counter++] = 46400;
+
+  buf[data_buf_counter++] = HDR_MARK;
+  buf[data_buf_counter++] = ONE_SPACE;
+  buf[data_buf_counter++] = BIT_MARK;
   buf[data_buf_counter++] = 5000;
+
   printf("FIrst %d, Second %d, last %d and last %d data_but-count %d\n", buf[0], buf[1], buf[data_buf_counter - 2],
        buf[data_buf_counter - 1], data_buf_counter);
-  printf("FIrst %d, Second %d, last %d and last %d data_but-count %d\n", buf[2], buf[3], buf[4], buf[5], buf[6]);
+  printf("Third %d, Forth %d, Fifth %d and sixth %d seventh %d\n", buf[2], buf[3], buf[4], buf[5], buf[6]);
 
   if ((region & 0x01) == 1) {
     // contorl_leds(1, 0, 1, 0);
